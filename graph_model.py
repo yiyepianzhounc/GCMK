@@ -4,7 +4,7 @@ import torch.nn.functional as F
 
 import networkx as nx
 
-from paper_work.my_model8.config import Config
+from paper_work.my_model3.config import Config
 
 config = Config()
 def normalize(A, symmetric=True):
@@ -32,14 +32,13 @@ class GCN(nn.Module):
         self.A = A.float()
         self.A = normalize(self.A)
         self.fc1 = nn.Linear(dim_in, dim_in, bias=False)
-        # self.fc2 = nn.Linear(dim_in, dim_in // 2, bias=False)
-        # self.fc3 = nn.Linear(dim_in // 2, dim_out, bias=False)
-        # self.relu = nn.ReLU()
-        # self.layer_nor = nn.LayerNorm(768)
-        # self.layer_nor2 = nn.LayerNorm(384)
-        # self.layer_nor3 = nn.LayerNorm(dim_out)
-        self.sigmoid = nn.Sigmoid()
+        self.fc2 = nn.Linear(dim_in, dim_in // 2, bias=False)
+        self.fc3 = nn.Linear(dim_in // 2, dim_out, bias=False)
         self.relu = nn.ReLU()
+        self.layer_nor = nn.LayerNorm(768)
+        self.layer_nor2 = nn.LayerNorm(384)
+        self.layer_nor3 = nn.LayerNorm(dim_out)
+        self.sigmoid = nn.Sigmoid()
         self.dropout = nn.Dropout(p=0.2)
 
         self.tanh = nn.Tanh()
@@ -58,21 +57,21 @@ class GCN(nn.Module):
         # x = self.sigmoid(x)
         x = self.dropout(x)
 
-        # x = self.fc2(self.A.mm(x))
-        # # x = self.layer_nor2(x)
-        # x = self.relu(x)
-        # # x = self.tanh(x)
-        # # x = self.sigmoid(x)
-        # x = self.dropout(x)
-        #
-        # # X = self.layer_nor(X)
-        # x = self.fc3(self.A.mm(x))
-        # # x = F.sigmoid(x)
-        # # x = self.layer_nor3(x)
-        # # x = self.relu(x)
-        # # x = self.tanh(x)
+        x = self.fc2(self.A.mm(x))
+        # x = self.layer_nor2(x)
+        x = self.relu(x)
+        # x = self.tanh(x)
         # x = self.sigmoid(x)
-        # x = self.dropout(x)
+        x = self.dropout(x)
+
+        # X = self.layer_nor(X)
+        x = self.fc3(self.A.mm(x))
+        # x = F.sigmoid(x)
+        # x = self.layer_nor3(x)
+        # x = self.relu(x)
+        # x = self.tanh(x)
+        x = self.sigmoid(x)
+        x = self.dropout(x)
 
         return x
 
@@ -103,7 +102,7 @@ class KnowledgeGraph(nn.Module):
         self.linear1 = nn.Linear(len(x[0]) * self.tnn_out_dim, 1200)
         self.linear2 = nn.Linear(1200, 8 * self.graph_out_size)
 
-        # self.gcn = GCN(self.A, 768, self.graph_out_size)  # 邻接矩阵、输入维度、输出维度
+        self.gcn = GCN(self.A, 768, self.graph_out_size)  # 邻接矩阵、输入维度、输出维度
 
     def forward(self, movie_ids):
         #   输入是所有长评
