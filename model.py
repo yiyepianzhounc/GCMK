@@ -14,9 +14,7 @@ device = config.DEVICE
 class TextModel(nn.Module):
     def __init__(self):
         super(TextModel, self).__init__()
-        # 文本特征提取模型
         self.bert = BertModel.from_pretrained(config.bert_path)
-        # 冻结参数
         for param in self.bert.parameters():
             param.requires_grad = True
 
@@ -29,7 +27,6 @@ class TextModel(nn.Module):
         return sentence_embedding
 
 
-# 用户特征提取模型
 class UserModel(nn.Module):
     def __init__(self):
         super(UserModel, self).__init__()
@@ -83,15 +80,14 @@ class Classifier(nn.Module):
         return x
 
 
-# 图+多层注意力模型
 class GHAModel(nn.Module):
-    def __init__(self, graph_dim=64,  # 图 电影表示的维度
-                 ANN_dim=128,  # 文本特征输出维度
-                 uf_dim=10,  # 用户特征输出维度
+    def __init__(self, graph_dim=64, 
+                 ANN_dim=128, 
+                 uf_dim=10, 
                  ):
         super(GHAModel, self).__init__()
         self.flag = config.flag
-        # 外部知识图模型
+        
         self.knowledge_graph = KnowledgeGraph(config.vocab_size, config.A, config.x, config.output_dim_g)
         # self.linear_graph = nn.Linear(config.output_dim_g, config.output_dim_g2)
 
@@ -102,13 +98,13 @@ class GHAModel(nn.Module):
         self.user_feature_model = UserModel()
         self.linear_u = nn.Linear(320,2)
 
-        # 输入维度和flag有关
+
         if self.flag == 0:
             classifier_in_dim = 768
         elif self.flag == 1:
             classifier_in_dim = config.output_dim_u + config.output_dim_a
         elif self.flag == 2:
-            # 乘以两倍
+
             classifier_in_dim = 2*768
         else:
             classifier_in_dim = 768*2
@@ -156,30 +152,3 @@ class GHAModel(nn.Module):
         return result
 
 
-# https://www.cnblogs.com/jfdwd/p/11445135.html
-if __name__ == '__main__':
-    bert = BertModel.from_pretrained(config.bert_path)
-    for param in bert.parameters():
-        print(param.requires_grad)
-    # x = torch.randint(100, [5, 128])
-    # mask = torch.zeros([5, 128])
-    # model_attention = ModelWithAttention()
-    # # y = model_attention(x, mask)
-    # self_attention = SelfAttention(128, 8, 0.2)
-    # emb = nn.Embedding(6000, 128)
-    # x = torch.zeros([5, 1, 128, 128])
-    # # x = emb(x)
-    # attention_block = AttentionBlock(1, 3, 128, mask)
-    # y = attention_block(x)
-    # print(y.shape)
-    # writer = SummaryWriter('./logs')
-    #
-    # x = torch.randint(100, [8, 128]).to(device)
-    # model = ANNModel().to(device)
-    # # y = model-one-bert(x)
-    #
-    # x = torch.tensor([x, [1, 0]])
-    #
-    # writer.add_graph(model, x)
-    # writer.close()
-    # nn.MultiheadAttention(x, 8)
