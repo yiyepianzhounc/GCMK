@@ -1,2 +1,2 @@
-# GEK
-Repository for Paper "*GEK: A Spam Movie Review Detection Model Based on Graph Convolutional Neural Network Embedding Movie Knowledge*"
+# GCMK
+Repository for Paper "*GCMK: A Spam Movie Review Detection Model Based on Graph Convolutional Neural Network Embedding Movie Knowledge*"
