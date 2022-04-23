@@ -115,11 +115,11 @@ class KnowledgeGraph(nn.Module):
         # x = self.linear1(x)
         # x = self.linear2(x)
 
-        # x = self.gcn(self.x)  # [movie&long_comment_count, out_dim]
+        x = self.gcn(self.x)  # [movie&long_comment_count, out_dim]
 
         feature_list = []
         for i in movie_ids:
-            feature_list.append(self.x[i])
+            feature_list.append(x[i])
         # print(len(feature_list))
         # print(len(feature_list[0]))
 
